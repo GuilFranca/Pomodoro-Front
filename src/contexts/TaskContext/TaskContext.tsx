@@ -5,7 +5,7 @@ import type { TaskActionModel } from './taskActions';
 
 type TaskContextProps = {
   state: TaskStateModel;
-  dispatch: Dispatch<TaskActionModel>;
+  dispatch: Dispatch<TaskActionModel> | ((action: TaskActionModel) => Promise<void>);
 };
 
 const initialContextValue = {
