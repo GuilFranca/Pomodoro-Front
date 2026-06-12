@@ -1,9 +1,20 @@
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3333';
 
+function getToken(): string | null {
+  return localStorage.getItem('chronos-token');
+}
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
+  const token = getToken();
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...(options?.headers as Record<string, string> ?? {}),
+  };
+
   const response = await fetch(`${API_URL}${path}`, {
-    headers: { 'Content-Type': 'application/json' },
     ...options,
+    headers,
   });
 
   if (!response.ok) {
@@ -15,6 +26,49 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
   return response.json() as Promise<T>;
 }
+
+// ─── Auth ────────────────────────────────────────────────────────────────────
+
+export type AuthUser = {
+  id: number;
+  name: string;
+  email: string;
+};
+
+export type AuthResponse = {
+  token: string;
+  user: AuthUser;
+};
+
+export const authApi = {
+  register: (payload: { name: string; email: string; password: string }) =>
+    request<AuthResponse>('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  login: (payload: { email: string; password: string }) =>
+    request<AuthResponse>('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  forgotPassword: (email: string) =>
+    request<{ message: string }>('/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    }),
+
+  resetPassword: (token: string, password: string) =>
+    request<{ message: string }>('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ token, password }),
+    }),
+
+  me: () => request<AuthUser>('/auth/me'),
+};
+
+// ─── Settings ────────────────────────────────────────────────────────────────
 
 export type SettingsPayload = {
   workTime: number;
@@ -35,6 +89,8 @@ export const settingsApi = {
       body: JSON.stringify(payload),
     }),
 };
+
+// ─── Tasks ───────────────────────────────────────────────────────────────────
 
 export type TaskApiPayload = {
   id: string;

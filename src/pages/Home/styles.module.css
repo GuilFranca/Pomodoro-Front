@@ -1,0 +1,10 @@
+.welcome {
+  font-size: 14px;
+  color: var(--color-foreground-secondary, #aaa);
+  text-align: center;
+  padding: 0.25rem 0;
+}
+
+.welcome strong {
+  color: var(--color-primary, #e31c1c);
+}
