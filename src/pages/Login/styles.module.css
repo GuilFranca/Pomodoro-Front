@@ -277,3 +277,23 @@
     padding: 3rem 1.5rem;
   }
 }
+/* ─── Info Box ───────────────────────────────────────────────────── */
+.infoBox {
+  background: rgba(227, 28, 28, 0.08);
+  border: 1px solid rgba(227, 28, 28, 0.2);
+  border-radius: 6px;
+  padding: 12px 16px;
+  font-size: 12px;
+  color: #aaa;
+  line-height: 1.6;
+  margin: 1rem 0 1.5rem;
+}
+
+.infoBox strong {
+  color: #e31c1c;
+}
+
+/* ─── Dynamic panel label ────────────────────────────────────────── */
+.wrap[data-panel]::after {
+  content: attr(data-panel);
+}
